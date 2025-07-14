@@ -2,33 +2,42 @@ class ParticipantArray:
   def __init__(self, elements):
     self.elements = elements
     
-  def getNumOfParticipants():
+  def getNumOfParticipants(self):
     pass
   
-  def getOpinionMean():
+  def getOpinionMean(self):
     pass
   
-  def getExperticeLevelMean():
+  def getExperticeLevelMean(self):
     pass
   
 class QuestionArray:
   def __init__(self, elements):
     self.elements = elements
     
-  def getNumOfParticipants():
+  def getNumOfParticipants(self):
     pass
   
-  def getOpinionMean():
+  def getOpinionMean(self):
     pass
   
-  def getExperticeLevelMean():
+  def getExperticeLevelMean(self):
     pass
 
 class Tree:
   def __init__(self, root, nodes):
     self.root = root
     self.nodes = nodes
-
+    
+  def getNumOfParticipants(self):
+    pass
+  
+  def getOpinionMean(self):
+    pass
+  
+  def getExperticeLevelMean(self):
+    pass
+  
 class Node:
   def __init__(self, parent, left, right, key):
     self.parent = parent
