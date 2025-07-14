@@ -1,28 +1,59 @@
 class ParticipantArray:
   def __init__(self, elements):
     self.elements = elements
+    self.size = self.getSize()
     
-  def getNumOfParticipants(self):
-    pass
-  
+  def getSize(self):
+    count = 0
+    
+    for _ in self.elements:
+      count += 1
+      
+    return count
+    
   def getOpinionMean(self):
-    pass
+    sum = 0
+    
+    for element in self.elements:
+      sum += element.opinion
+      
+    return sum/self.size
   
-  def getExperticeLevelMean(self):
-    pass
+  def getExperticeMean(self):
+    sum = 0
+    
+    for element in self.elements:
+      sum += element.expertise
+      
+    return sum/self.size
   
 class QuestionArray:
   def __init__(self, elements):
     self.elements = elements
     
-  def getNumOfParticipants(self):
-    pass
+  def getSize(self):
+    count = 0
+    
+    for _ in self.elements:
+      count += 1
+      
+    return count
   
   def getOpinionMean(self):
-    pass
+    sum = 0
+    
+    for element in self.elements:
+      sum += element.opinionMean
+      
+    return sum/self.size
   
-  def getExperticeLevelMean(self):
-    pass
+  def getExperticeMean(self):
+    sum = 0
+    
+    for element in self.elements:
+      sum += element.expertiseMean
+      
+    return sum/self.size
 
 class Tree:
   def __init__(self, root, nodes):
@@ -35,7 +66,7 @@ class Tree:
   def getOpinionMean(self):
     pass
   
-  def getExperticeLevelMean(self):
+  def getExperticeMean(self):
     pass
   
 class Node:
@@ -46,21 +77,25 @@ class Node:
     self.key = key
 
 class Participant:
-  def __init__(self, name, expertiseLevel, opinion):
+  _identifierCounter = 1
+  
+  def __init__(self, name, expertise, opinion):
+    self.identifier = Participant._identifierCounter
     self.name = name
-    self.expertiseLevel = expertiseLevel
+    self.expertise = expertise
     self.opinion = opinion
+    Participant._identifierCounter += 1
     
 class Question:
   def __init__(self, participants):
     self.participants = participants
-    self.participantsSize = participants.getNumOfParticipants()
+    self.participantsSize = participants.size
     self.opinionMean = participants.getOpinionMean()
-    self.expertiseLevelMean = participants.getExpertiseLevelMean()
+    self.expertiseMean = participants.getExpertiseMean()
   
 class Topic:
   def __init__(self, questions):
     self.questions = questions
-    self.participants = questions.getNumOfParticipants()
+    self.participants = questions.size
     self.opinionMeanOfMeans = questions.getOpinionMean()
-    self.expertiseLevelMeanOfMeans = questions.getExpertiseLevelMean()
+    self.expertiseMeanOfMeans = questions.getExpertiseMean()
