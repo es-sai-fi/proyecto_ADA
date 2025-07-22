@@ -53,7 +53,7 @@ def questionComparer(a, b):
   if a.opinionMean == b.opinionMean:
     # Si hay empate en promedio de experticia
     if a.expertiseMean == b.expertiseMean:
-      return a.localIdentifier < b.localIdentifier
+      return a.identifier < b.identifier
     else:
       return a.expertiseMean > b.expertiseMean
   else:

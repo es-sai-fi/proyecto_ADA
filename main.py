@@ -1,6 +1,6 @@
 from array_sol_classes import *
 
-def parseAndCreateObjets(filename):
+def parseAndCreateSurvey(filename):
   participants = []
   questions = []
   topics = []
@@ -8,12 +8,11 @@ def parseAndCreateObjets(filename):
   with open(filename, "r", encoding="utf-8") as file:
     lines = [line.strip() for line in file]
 
-  # Separar líneas en bloques
   participantLines = []
   questionBlocks = []
   currentBlock = []
 
-  # Leer líneas: primero participantes, luego bloques de preguntas
+  # Lectura de lineas
   parsingQuestions = False
   for line in lines:
     if line.startswith("{") and line.endswith("}"):
@@ -31,7 +30,7 @@ def parseAndCreateObjets(filename):
   if currentBlock:
     questionBlocks.append(currentBlock)
 
-  # Crear objetos Participant
+  # Crear participantes
   for line in participantLines:
     try:
       name, data = line.split(", Experticia:")
@@ -42,19 +41,19 @@ def parseAndCreateObjets(filename):
 
   # Crear temas y preguntas
   for block in questionBlocks:
-    blockQuestions = []  # Preguntas solo de este tema
+    blockQuestions = []
     for line in block:
       ids = list(map(int, line.strip("{}").split(",")))
       questionParticipants = [participants[i - 1] for i in ids]
       question = ArrayQuestion(questionParticipants)
-      questions.append(question)         # Añadir al listado global
-      blockQuestions.append(question)    # Añadir al tema
+      questions.append(question)
+      blockQuestions.append(question)
     topics.append(ArrayTopic(blockQuestions))
 
   return ArraySurvey(topics, questions, participants)
 
 if __name__ == "__main__":
-  filename = "Test3.txt"
+  filename = "Test1.txt"
   
-  survey = parseAndCreateObjets(filename)
+  survey = parseAndCreateSurvey(filename)
   survey.execute()

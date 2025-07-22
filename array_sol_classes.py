@@ -14,14 +14,15 @@ class ArrayParticipant:
     return f"({self.identifier}, Nombre: '{self.name}', Experticia: {self.expertise}, Opinión: {self.opinion})"
     
 class ArrayQuestion:
+  _identifierCounter = 1
+  
   def __init__(self, participants):
+    self.identifier = ArrayQuestion._identifierCounter
     self.participants = participants
+    ArrayQuestion._identifierCounter += 1
     
-  def setIdentifier(self, identifier):
-    self.identifier = identifier
-    
-  def setLocalIdentifier(self, localIdentifier):
-    self.localIdentifier = localIdentifier
+  def setPrintIdentifier(self, printIdentifier):
+    self.printIdentifier = printIdentifier
     
   def _sort(self):
     self.participants = mergeSort(self.participants, participantComparer)  
@@ -66,16 +67,18 @@ class ArrayQuestion:
         if count > maxCount:
           maxCount = count
           opinionMode = current
+        elif count == maxCount:
+          if current < opinionMode:
+            opinionMode = current
         current = self.participants[i].opinion
         count = 1
 
     if count > maxCount:
-      maxCount = current
       opinionMode = current
-      
-    if maxCount == 1:
-      return None
-
+    elif count == maxCount:
+      if current < opinionMode:
+        opinionMode = current
+          
     return opinionMode
   
   def _opinionMedian(self):
@@ -83,7 +86,11 @@ class ArrayQuestion:
       return self.participants[self.numOfParticipants // 2].opinion
     else:
       i = self.numOfParticipants // 2
-      return (self.participants[i - 1].opinion + self.participants[i].opinion) / 2
+      
+      if self.participants[i - 1].opinion < self.participants[i].opinion:
+        return self.participants[i - 1].opinion
+      
+      return self.participants[i].opinion
       
   def _opinionMean(self):
     acc = 0
@@ -110,7 +117,8 @@ class ArrayTopic:
     ArrayTopic._identifierCounter += 1
     
     for i, question in enumerate(questions, 1):
-      question.setLocalIdentifier(i)
+      question.setPrintIdentifier(f"{self.identifier}.{i}")
+      
     
   def _sort(self):
      self.questions = mergeSort(self.questions, questionComparer)
@@ -167,8 +175,7 @@ class ArraySurvey:
       outputLines.append(f"[{topic.opinionMeanOfMeans:.2f}] Tema {topic.identifier}:")
       for question in topic.questions:
         participantIds = ", ".join(str(p.identifier) for p in question.participants)
-        question.setIdentifier(f"{topic.identifier}.{question.localIdentifier}")
-        outputLines.append(f"\t[{question.opinionMean:.2f}] Pregunta {question.identifier} : ({participantIds})")
+        outputLines.append(f"\t[{question.opinionMean:.2f}] Pregunta {question.printIdentifier}: ({participantIds})")
       outputLines.append("")
 
     outputLines.append("Lista de encuestados:")
@@ -177,16 +184,16 @@ class ArraySurvey:
     outputLines.append("")
 
     outputLines.append("Resultados:")
-    outputLines.append(f"\tPregunta con mayor promedio de opinión: [{self.questionHighestOpinionMean.opinionMean:.2f}] Pregunta: {self.questionHighestOpinionMean.identifier}")
-    outputLines.append(f"\tPregunta con menor promedio de opinión: [{self.questionLowestOpinionMean.opinionMean:.2f}] Pregunta: {self.questionLowestOpinionMean.identifier}")
-    outputLines.append(f"\tPregunta con mayor promedio de experticia: [{self.questionHighestExpertiseMean.expertiseMean:.2f}] Pregunta: {self.questionHighestExpertiseMean.identifier}")
-    outputLines.append(f"\tPregunta con menor promedio de experticia: [{self.questionLowestExpertiseMean.expertiseMean:.2f}] Pregunta: {self.questionLowestExpertiseMean.identifier}")
-    outputLines.append(f"\tPregunta con mayor mediana de opinión: [{self.questionHighestOpinionMedian.opinionMedian:.1f}] Pregunta: {self.questionHighestOpinionMedian.identifier}")
-    outputLines.append(f"\tPregunta con menor mediana de opinión: [{self.questionLowestOpinionMedian.opinionMedian:.1f}] Pregunta: {self.questionLowestOpinionMedian.identifier}")
-    outputLines.append(f"\tPregunta con mayor moda de opinión: [{self.questionHighestOpinionMode.opinionMode:.1f}] Pregunta: {self.questionHighestOpinionMode.identifier}")
-    outputLines.append(f"\tPregunta con menor moda de opinión: [{self.questionLowestOpinionMode.opinionMode:.1f}] Pregunta: {self.questionLowestOpinionMode.identifier}")
-    outputLines.append(f"\tPregunta con mayor extremismo: [{self.questionHighestExtremism.extremism:.2f}] Pregunta: {self.questionHighestExtremism.identifier}")
-    outputLines.append(f"\tPregunta con mayor consenso: [{self.questionHighestConsensus.consensus:.2f}] Pregunta: {self.questionHighestConsensus.identifier}")
+    outputLines.append(f"\tPregunta con mayor promedio de opinión: [{self.questionHighestOpinionMean.opinionMean:.2f}] Pregunta: {self.questionHighestOpinionMean.printIdentifier}")
+    outputLines.append(f"\tPregunta con menor promedio de opinión: [{self.questionLowestOpinionMean.opinionMean:.2f}] Pregunta: {self.questionLowestOpinionMean.printIdentifier}")
+    outputLines.append(f"\tPregunta con mayor promedio de experticia: [{self.questionHighestExpertiseMean.expertiseMean:.2f}] Pregunta: {self.questionHighestExpertiseMean.printIdentifier}")
+    outputLines.append(f"\tPregunta con menor promedio de experticia: [{self.questionLowestExpertiseMean.expertiseMean:.2f}] Pregunta: {self.questionLowestExpertiseMean.printIdentifier}")
+    outputLines.append(f"\tPregunta con mayor mediana de opinión: [{self.questionHighestOpinionMedian.opinionMedian}] Pregunta: {self.questionHighestOpinionMedian.printIdentifier}")
+    outputLines.append(f"\tPregunta con menor mediana de opinión: [{self.questionLowestOpinionMedian.opinionMedian}] Pregunta: {self.questionLowestOpinionMedian.printIdentifier}")
+    outputLines.append(f"\tPregunta con mayor moda de opinión: [{self.questionHighestOpinionMode.opinionMode}] Pregunta: {self.questionHighestOpinionMode.printIdentifier}")
+    outputLines.append(f"\tPregunta con menor moda de opinión: [{self.questionLowestOpinionMode.opinionMode}] Pregunta: {self.questionLowestOpinionMode.printIdentifier}")
+    outputLines.append(f"\tPregunta con mayor extremismo: [{self.questionHighestExtremism.extremism:.2f}] Pregunta: {self.questionHighestExtremism.printIdentifier}")
+    outputLines.append(f"\tPregunta con mayor consenso: [{self.questionHighestConsensus.consensus:.2f}] Pregunta: {self.questionHighestConsensus.printIdentifier}")
 
     result_text = "\n".join(outputLines)
 
@@ -213,6 +220,9 @@ class ArraySurvey:
       if question.opinionMean > highest:
         questionAux = question
         highest = question.opinionMean
+      elif question.opinionMean == highest:
+        if question.identifier < questionAux.identifier:
+          questionAux = question
 
     return questionAux
 
@@ -224,7 +234,10 @@ class ArraySurvey:
       if question.opinionMean < lowest:
         questionAux = question
         lowest = question.opinionMean
-
+      elif question.opinionMean == lowest:
+        if question.identifier < questionAux.identifier:
+          questionAux = question
+          
     return questionAux
   
   def _calcHighestExpertiseMean(self):
@@ -235,7 +248,10 @@ class ArraySurvey:
       if question.expertiseMean > highest:
         questionAux = question
         highest = question.expertiseMean
-
+      elif question.expertiseMean == highest:
+        if question.identifier < questionAux.identifier:
+          questionAux = question
+          
     return questionAux
 
   def _calcLowestExpertiseMean(self):
@@ -246,7 +262,10 @@ class ArraySurvey:
       if question.expertiseMean < lowest:
         questionAux = question
         lowest = question.expertiseMean
-
+      elif question.expertiseMean == lowest:
+        if question.identifier < questionAux.identifier:
+          questionAux = question
+          
     return questionAux
 
   def _calcHighestOpinionMedian(self):
@@ -257,7 +276,10 @@ class ArraySurvey:
       if question.opinionMedian > highest:
         questionAux = question
         highest = question.opinionMedian
-
+      elif question.opinionMedian == highest:
+        if question.identifier < questionAux.identifier:
+          questionAux = question
+          
     return questionAux
 
   def _calcLowestOpinionMedian(self):
@@ -268,7 +290,10 @@ class ArraySurvey:
       if question.opinionMedian < lowest:
         questionAux = question
         lowest = question.opinionMedian
-
+      elif question.opinionMedian == lowest:
+        if question.identifier < questionAux.identifier:
+          questionAux = question
+          
     return questionAux
 
   def _calcHighestOpinionMode(self):
@@ -276,13 +301,13 @@ class ArraySurvey:
     highest = -1
 
     for question in self.questions:
-      if question.opinionMode is None:
-        continue
-      
-      elif question.opinionMode > highest:
+      if question.opinionMode > highest:
         questionAux = question
         highest = question.opinionMode
-
+      elif question.opinionMode == highest:
+        if question.identifier < questionAux.identifier:
+          questionAux = question
+          
     return questionAux
 
   def _calcLowestOpinionMode(self):
@@ -290,13 +315,13 @@ class ArraySurvey:
     lowest = 11
 
     for question in self.questions:
-      if question.opinionMode is None:
-        continue
-      
-      elif question.opinionMode < lowest:
+      if question.opinionMode < lowest:
         questionAux = question
         lowest = question.opinionMode
-
+      elif question.opinionMode == lowest:
+        if question.identifier < questionAux.identifier:
+          questionAux = question
+          
     return questionAux
 
   def _calcHighestExtremism(self):
@@ -307,7 +332,10 @@ class ArraySurvey:
       if question.extremism > highest:
         questionAux = question
         highest = question.extremism
-
+      elif question.extremism == highest:
+        if question.identifier < questionAux.identifier:
+          questionAux = question
+          
     return questionAux
 
   def _calcHighestConsensus(self):
@@ -318,7 +346,10 @@ class ArraySurvey:
       if question.consensus > highest:
         questionAux = question
         highest = question.consensus
-
+      elif question.consensus == highest:
+        if question.identifier < questionAux.identifier:
+          questionAux = question
+          
     return questionAux
     
   def _calcData(self):
