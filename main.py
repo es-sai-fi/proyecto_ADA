@@ -1,5 +1,6 @@
 from core.array_sol_classes import *
 from core.tree_sol_classes import *
+import time
 
 def parseAndCreateArraySurvey(filename):
   participants = []
@@ -107,9 +108,17 @@ def parseAndCreateTreeSurvey(path):
 
 if __name__ == "__main__":
   path = "tests/Test1.txt"
+  solution = 1
   
-  #arraySurvey = parseAndCreateArraySurvey(path)
-  #arraySurvey.execute()
-  
-  treeSurvey = parseAndCreateTreeSurvey(path)
-  treeSurvey.execute()
+  if solution:
+    start = time.time()
+    treeSurvey = parseAndCreateTreeSurvey(path)
+    treeSurvey.execute()
+    end = time.time()
+    print(f"Tiempo (BSTs): {end - start}")
+  else:
+    start = time.time()
+    arraySurvey = parseAndCreateArraySurvey(path)
+    arraySurvey.execute()
+    end = time.time()
+    print(f"Tiempo (Arrays): {end - start}")
