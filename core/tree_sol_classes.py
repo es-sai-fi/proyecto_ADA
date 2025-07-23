@@ -1,4 +1,4 @@
-from auxiliar_functions import *
+from core.auxiliar_functions import *
 
 class ParticipantTree:
   def __init__(self, root=None):
@@ -134,8 +134,6 @@ class Node:
     self.parent = parent
     self.left = left
     self.right = right
-
-from auxiliar_functions import *
 
 class TreeParticipant:
   _identifierCounter = 1

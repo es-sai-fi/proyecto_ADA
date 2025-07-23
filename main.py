@@ -1,5 +1,5 @@
-from array_sol_classes import *
-from tree_sol_classes import *
+from core.array_sol_classes import *
+from core.tree_sol_classes import *
 
 def parseAndCreateArraySurvey(filename):
   participants = []
@@ -53,12 +53,12 @@ def parseAndCreateArraySurvey(filename):
 
   return ArraySurvey(topics, questions, participants)
 
-def parseAndCreateTreeSurvey(filename):
+def parseAndCreateTreeSurvey(path):
   participantsAux = []
   questionsAux = []
   topicsAux = []
 
-  with open(filename, "r", encoding="utf-8") as file:
+  with open(path, "r", encoding="utf-8") as file:
     lines = [line.strip() for line in file]
 
   participantLines = []
@@ -106,10 +106,10 @@ def parseAndCreateTreeSurvey(filename):
   return TreeSurvey(topicsAux, questionsAux, participantsAux)
 
 if __name__ == "__main__":
-  filename = "Test1.txt"
+  path = "tests/Test1.txt"
   
-  #arraySurvey = parseAndCreateArraySurvey(filename)
+  #arraySurvey = parseAndCreateArraySurvey(path)
   #arraySurvey.execute()
   
-  treeSurvey = parseAndCreateTreeSurvey(filename)
+  treeSurvey = parseAndCreateTreeSurvey(path)
   treeSurvey.execute()

@@ -1,4 +1,4 @@
-from auxiliar_functions import *
+from core.auxiliar_functions import *
 
 class ArrayParticipant:
   _identifierCounter = 1
