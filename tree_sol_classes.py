@@ -157,13 +157,14 @@ class TreeQuestion:
     self.identifier = TreeQuestion._identifierCounter
     self.participantsAux = participantsAux
     self.participantTree = ParticipantTree()
-    self._initTree()
     TreeQuestion._identifierCounter += 1
   
   def _initTree(self):
     self.participantTree = ParticipantTree()
     for participant in self.participantsAux:
-      self.participantTree.treeInsert(Node(participant))    
+      self.participantTree.treeInsert(Node(participant))   
+      
+    self._calcData() 
   
   def setPrintIdentifier(self, printIdentifier):
     self.printIdentifier = printIdentifier
@@ -384,7 +385,6 @@ class TreeTopic:
   def __init__(self, questionsAux):
     self.identifier = TreeTopic._identifierCounter
     self.questionsAux = questionsAux
-    self._initTree()
     TreeTopic._identifierCounter += 1
   
   def _initTree(self):
@@ -392,6 +392,8 @@ class TreeTopic:
     for i, question in enumerate(self.questionsAux, 1):
       question.setPrintIdentifier(f"{self.identifier}.{i}")
       self.questionTree.treeInsert(Node(question))
+      
+    self._calcData()
       
   def _calcTotalNumOfParticipants(self):
     total = 0
@@ -441,9 +443,9 @@ class TreeTopic:
 
     return acc / self.numOfQuestions     
   
-  def _calcExpertiseMean(self):
+  def _calcExpertiseMeanOfMeans(self):
     acc = 0
-    current = self.participantTree.root
+    current = self.questionTree.root
 
     while current:
       if current.left is None:
@@ -468,15 +470,14 @@ class TreeTopic:
   def _calcData(self):
     self.totalNumOfParticipants = self._calcTotalNumOfParticipants()
     self.numOfQuestions = self.questionTree.countQuestions()
-    self.opinionMeanOfMeans = self._opinionMeanOfMeans()
-    self.expertiseMeanOfMeans = self._expertiseMeanOfMeans()
+    self.opinionMeanOfMeans = self._calcOpinionMeanOfMeans()
+    self.expertiseMeanOfMeans = self._calcExpertiseMeanOfMeans()
  
 class TreeSurvey:
   def __init__(self, topicsAux, questionsAux, participantsAux):
     self.topicsAux = topicsAux
     self.questionsAux = questionsAux
     self.participantsAux = participantsAux
-    self._initTrees()
   
   def _initTrees(self):
     self.topicTree = TopicTree()
@@ -485,32 +486,31 @@ class TreeSurvey:
     for participant in self.participantsAux:
       self.participantTree.treeInsert(Node(participant))
     for question in self.questionsAux:
+      question._initTree()
       self.questionTree.treeInsert(Node(question))
     for topic in self.topicsAux:
+      topic._initTree()
       self.topicTree.treeInsert(Node(topic))
   
   def execute(self):
-    self._sortQuestionParticipants()
-    self._calcData()
-    self._sortTopicQuestions()
-    self._sort()
+    self._initTrees()
     self._calcAdditionalData()
     self._printSolution()
   
   def _printSolution(self):
     outputLines = []
 
-    outputLines.append("Resultados de la encuesta:")
+    outputLines.append("Resultados de la encuesta (BSTs):")
     outputLines.append("")
-    for topic in self.topics:
+    for topic in self.topicsAux:
       outputLines.append(f"[{topic.opinionMeanOfMeans:.2f}] Tema {topic.identifier}:")
-      for question in topic.questions:
-        participantIds = ", ".join(str(p.identifier) for p in question.participants)
+      for question in topic.questionsAux:
+        participantIds = ", ".join(str(p.identifier) for p in question.participantsAux)
         outputLines.append(f"\t[{question.opinionMean:.2f}] Pregunta {question.printIdentifier}: ({participantIds})")
       outputLines.append("")
 
     outputLines.append("Lista de encuestados:")
-    for participant in self.participants:
+    for participant in self.participantsAux:
       outputLines.append(f"\t{participant}")
     outputLines.append("")
 
@@ -544,144 +544,354 @@ class TreeSurvey:
     self.questionHighestConsensus = self._calcHighestConsensus()
     
   def _calcHighestOpinionMean(self):
-    questionAux = self.questions[0]
-    highest = questionAux.opinionMean
-
-    for question in self.questions:
-      if question.opinionMean > highest:
-        questionAux = question
-        highest = question.opinionMean
-      elif question.opinionMean == highest:
-        if question.identifier < questionAux.identifier:
-          questionAux = question
-
-    return questionAux
-
-  def _calcLowestOpinionMean(self):
-    questionAux = self.questions[0]
-    lowest = questionAux.opinionMean
-
-    for question in self.questions:
-      if question.opinionMean < lowest:
-        questionAux = question
-        lowest = question.opinionMean
-      elif question.opinionMean == lowest:
-        if question.identifier < questionAux.identifier:
-          questionAux = question
-          
-    return questionAux
-  
-  def _calcHighestExpertiseMean(self):
-    questionAux = self.questions[0]
-    highest = questionAux.expertiseMean
-
-    for question in self.questions:
-      if question.expertiseMean > highest:
-        questionAux = question
-        highest = question.expertiseMean
-      elif question.expertiseMean == highest:
-        if question.identifier < questionAux.identifier:
-          questionAux = question
-          
-    return questionAux
-
-  def _calcLowestExpertiseMean(self):
-    questionAux = self.questions[0]
-    lowest = questionAux.expertiseMean
-
-    for question in self.questions:
-      if question.expertiseMean < lowest:
-        questionAux = question
-        lowest = question.expertiseMean
-      elif question.expertiseMean == lowest:
-        if question.identifier < questionAux.identifier:
-          questionAux = question
-          
-    return questionAux
-
-  def _calcHighestOpinionMedian(self):
-    questionAux = self.questions[0]
-    highest = questionAux.opinionMedian
-
-    for question in self.questions:
-      if question.opinionMedian > highest:
-        questionAux = question
-        highest = question.opinionMedian
-      elif question.opinionMedian == highest:
-        if question.identifier < questionAux.identifier:
-          questionAux = question
-          
-    return questionAux
-
-  def _calcLowestOpinionMedian(self):
-    questionAux = self.questions[0]
-    lowest = questionAux.opinionMedian
-
-    for question in self.questions:
-      if question.opinionMedian < lowest:
-        questionAux = question
-        lowest = question.opinionMedian
-      elif question.opinionMedian == lowest:
-        if question.identifier < questionAux.identifier:
-          questionAux = question
-          
-    return questionAux
-
-  def _calcHighestOpinionMode(self):
-    questionAux = self.questions[0]
+    current = self.questionTree.root
+    bestQuestion = None
     highest = -1
 
-    for question in self.questions:
-      if question.opinionMode > highest:
-        questionAux = question
-        highest = question.opinionMode
-      elif question.opinionMode == highest:
-        if question.identifier < questionAux.identifier:
-          questionAux = question
-          
-    return questionAux
+    while current:
+      if current.left is None:
+        q = current.key
+        if q.opinionMean > highest:
+          bestQuestion = q
+          highest = q.opinionMean
+        elif q.opinionMean == highest and q.identifier < bestQuestion.identifier:
+          bestQuestion = q
+        current = current.right
+      else:
+        pre = current.left
+        
+        while pre.right and pre.right != current:
+          pre = pre.right
 
+        if pre.right is None:
+          pre.right = current
+          current = current.left
+        else:
+          pre.right = None
+          q = current.key
+          if q.opinionMean > highest:
+            bestQuestion = q
+            highest = q.opinionMean
+          elif q.opinionMean == highest and q.identifier < bestQuestion.identifier:
+            bestQuestion = q
+          current = current.right
+
+    return bestQuestion 
+  
+  def _calcLowestOpinionMean(self):
+    current = self.questionTree.root
+    bestQuestion = None
+    lowest = 10
+
+    while current:
+      if current.left is None:
+        q = current.key
+        if q.opinionMean < lowest:
+          bestQuestion = q
+          lowest = q.opinionMean
+        elif q.opinionMean == lowest and q.identifier < bestQuestion.identifier:
+          bestQuestion = q
+        current = current.right
+      else:
+        pre = current.left
+        
+        while pre.right and pre.right != current:
+          pre = pre.right
+
+        if pre.right is None:
+          pre.right = current
+          current = current.left
+        else:
+          pre.right = None
+          q = current.key
+          if q.opinionMean < lowest:
+            bestQuestion = q
+            lowest = q.opinionMean
+          elif q.opinionMean == lowest and q.identifier < bestQuestion.identifier:
+            bestQuestion = q
+          current = current.right
+
+    return bestQuestion 
+  
+  def _calcHighestExpertiseMean(self):
+    current = self.questionTree.root
+    bestQuestion = None
+    highest = -1
+
+    while current:
+      if current.left is None:
+        q = current.key
+        if q.expertiseMean > highest:
+          bestQuestion = q
+          highest = q.expertiseMean
+        elif q.expertiseMean == highest and q.identifier < bestQuestion.identifier:
+          bestQuestion = q
+        current = current.right
+      else:
+        pre = current.left
+        
+        while pre.right and pre.right != current:
+          pre = pre.right
+
+        if pre.right is None:
+          pre.right = current
+          current = current.left
+        else:
+          pre.right = None
+          q = current.key
+          if q.expertiseMean > highest:
+            bestQuestion = q
+            highest = q.expertiseMean
+          elif q.expertiseMean == highest and q.identifier < bestQuestion.identifier:
+            bestQuestion = q
+          current = current.right
+
+    return bestQuestion 
+  
+  def _calcLowestExpertiseMean(self):
+    current = self.questionTree.root
+    bestQuestion = None
+    lowest = 10
+
+    while current:
+      if current.left is None:
+        q = current.key
+        if q.expertiseMean < lowest:
+          bestQuestion = q
+          lowest = q.expertiseMean
+        elif q.expertiseMean == lowest and q.identifier < bestQuestion.identifier:
+          bestQuestion = q
+        current = current.right
+      else:
+        pre = current.left
+        
+        while pre.right and pre.right != current:
+          pre = pre.right
+
+        if pre.right is None:
+          pre.right = current
+          current = current.left
+        else:
+          pre.right = None
+          q = current.key
+          if q.expertiseMean < lowest:
+            bestQuestion = q
+            lowest = q.expertiseMean
+          elif q.expertiseMean == lowest and q.identifier < bestQuestion.identifier:
+            bestQuestion = q
+          current = current.right
+
+    return bestQuestion 
+  
+  def _calcHighestOpinionMedian(self):
+    current = self.questionTree.root
+    bestQuestion = None
+    highest = -1
+
+    while current:
+      if current.left is None:
+        q = current.key
+        if q.opinionMedian > highest:
+          bestQuestion = q
+          highest = q.opinionMedian
+        elif q.opinionMedian == highest and q.identifier < bestQuestion.identifier:
+          bestQuestion = q
+        current = current.right
+      else:
+        pre = current.left
+        
+        while pre.right and pre.right != current:
+          pre = pre.right
+
+        if pre.right is None:
+          pre.right = current
+          current = current.left
+        else:
+          pre.right = None
+          q = current.key
+          if q.opinionMedian > highest:
+            bestQuestion = q
+            highest = q.opinionMedian
+          elif q.opinionMedian == highest and q.identifier < bestQuestion.identifier:
+            bestQuestion = q
+          current = current.right
+
+    return bestQuestion 
+  
+  def _calcLowestOpinionMedian(self):
+    current = self.questionTree.root
+    bestQuestion = None
+    lowest = 10
+
+    while current:
+      if current.left is None:
+        q = current.key
+        if q.opinionMedian < lowest:
+          bestQuestion = q
+          lowest = q.opinionMedian
+        elif q.opinionMedian == lowest and q.identifier < bestQuestion.identifier:
+          bestQuestion = q
+        current = current.right
+      else:
+        pre = current.left
+        
+        while pre.right and pre.right != current:
+          pre = pre.right
+
+        if pre.right is None:
+          pre.right = current
+          current = current.left
+        else:
+          pre.right = None
+          q = current.key
+          if q.opinionMedian < lowest:
+            bestQuestion = q
+            lowest = q.opinionMedian
+          elif q.opinionMedian == lowest and q.identifier < bestQuestion.identifier:
+            bestQuestion = q
+          current = current.right
+
+    return bestQuestion 
+  
+  def _calcHighestOpinionMode(self):
+    current = self.questionTree.root
+    bestQuestion = None
+    highest = -1
+
+    while current:
+      if current.left is None:
+        q = current.key
+        if q.opinionMode > highest:
+          bestQuestion = q
+          highest = q.opinionMode
+        elif q.opinionMode == highest and q.identifier < bestQuestion.identifier:
+          bestQuestion = q
+        current = current.right
+      else:
+        pre = current.left
+        
+        while pre.right and pre.right != current:
+          pre = pre.right
+
+        if pre.right is None:
+          pre.right = current
+          current = current.left
+        else:
+          pre.right = None
+          q = current.key
+          if q.opinionMode > highest:
+            bestQuestion = q
+            highest = q.opinionMode
+          elif q.opinionMode == highest and q.identifier < bestQuestion.identifier:
+            bestQuestion = q
+          current = current.right
+
+    return bestQuestion 
+  
   def _calcLowestOpinionMode(self):
-    questionAux = self.questions[0]
-    lowest = 11
+    current = self.questionTree.root
+    bestQuestion = None
+    lowest = 10
 
-    for question in self.questions:
-      if question.opinionMode < lowest:
-        questionAux = question
-        lowest = question.opinionMode
-      elif question.opinionMode == lowest:
-        if question.identifier < questionAux.identifier:
-          questionAux = question
-          
-    return questionAux
+    while current:
+      if current.left is None:
+        q = current.key
+        if q.opinionMode < lowest:
+          bestQuestion = q
+          lowest = q.opinionMode
+        elif q.opinionMode == lowest and q.identifier < bestQuestion.identifier:
+          bestQuestion = q
+        current = current.right
+      else:
+        pre = current.left
+        
+        while pre.right and pre.right != current:
+          pre = pre.right
+
+        if pre.right is None:
+          pre.right = current
+          current = current.left
+        else:
+          pre.right = None
+          q = current.key
+          if q.opinionMode < lowest:
+            bestQuestion = q
+            lowest = q.opinionMode
+          elif q.opinionMode == lowest and q.identifier < bestQuestion.identifier:
+            bestQuestion = q
+          current = current.right
+
+    return bestQuestion 
 
   def _calcHighestExtremism(self):
-    questionAux = self.questions[0]
-    highest = questionAux.extremism
+    current = self.questionTree.root
+    bestQuestion = None
+    highest = -1
 
-    for question in self.questions:
-      if question.extremism > highest:
-        questionAux = question
-        highest = question.extremism
-      elif question.extremism == highest:
-        if question.identifier < questionAux.identifier:
-          questionAux = question
-          
-    return questionAux
+    while current:
+      if current.left is None:
+        q = current.key
+        if q.extremism > highest:
+          bestQuestion = q
+          highest = q.extremism
+        elif q.extremism == highest and q.identifier < bestQuestion.identifier:
+          bestQuestion = q
+        current = current.right
+      else:
+        pre = current.left
+        
+        while pre.right and pre.right != current:
+          pre = pre.right
+
+        if pre.right is None:
+          pre.right = current
+          current = current.left
+        else:
+          pre.right = None
+          q = current.key
+          if q.extremism > highest:
+            bestQuestion = q
+            highest = q.extremism
+          elif q.extremism == highest and q.identifier < bestQuestion.identifier:
+            bestQuestion = q
+          current = current.right
+
+    return bestQuestion 
 
   def _calcHighestConsensus(self):
-    questionAux = self.questions[0]
-    highest = questionAux.consensus
+    current = self.questionTree.root
+    bestQuestion = None
+    highest = -1
 
-    for question in self.questions:
-      if question.consensus > highest:
-        questionAux = question
-        highest = question.consensus
-      elif question.consensus == highest:
-        if question.identifier < questionAux.identifier:
-          questionAux = question
-          
-    return questionAux
+    while current:
+      if current.left is None:
+        q = current.key
+        if q.consensus > highest:
+          bestQuestion = q
+          highest = q.consensus
+        elif q.consensus == highest and q.identifier < bestQuestion.identifier:
+          bestQuestion = q
+        current = current.right
+      else:
+        pre = current.left
+        
+        while pre.right and pre.right != current:
+          pre = pre.right
+
+        if pre.right is None:
+          pre.right = current
+          current = current.left
+        else:
+          pre.right = None
+          q = current.key
+          if q.consensus > highest:
+            bestQuestion = q
+            highest = q.consensus
+          elif q.consensus == highest and q.identifier < bestQuestion.identifier:
+            bestQuestion = q
+          current = current.right
+
+    return bestQuestion 
     
   def _calcData(self):
     for question in self.questions:

@@ -170,7 +170,7 @@ class ArraySurvey:
   def _printSolution(self):
     outputLines = []
 
-    outputLines.append("Resultados de la encuesta:")
+    outputLines.append("Resultados de la encuesta (Arrays):")
     outputLines.append("")
     for topic in self.topics:
       outputLines.append(f"[{topic.opinionMeanOfMeans:.2f}] Tema {topic.identifier}:")

@@ -112,3 +112,4 @@ if __name__ == "__main__":
   #arraySurvey.execute()
   
   treeSurvey = parseAndCreateTreeSurvey(filename)
+  treeSurvey.execute()
