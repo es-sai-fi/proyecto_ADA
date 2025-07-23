@@ -1,15 +1,139 @@
 from auxiliar_functions import *
 
-class Tree:
-  def __init__(self, root, nodes):
+class ParticipantTree:
+  def __init__(self, root=None):
     self.root = root
   
+  def treeInsert(self, node):
+    y = None
+    x = self.root
+    
+    while x != None:
+      y = x
+      
+      if participantComparer(node.key, x.key):
+        x = x.left
+      else:
+        x = x.right
+    
+    node.parent = y
+
+    if y is None:
+      self.root = node
+    else:
+      if participantComparer(node.key, y.key):
+        y.left = node
+      else:
+        y.right = node
+        
+  def countParticipants(self):
+    count = 0
+    current = self.root
+
+    while current:
+      if current.left is None:
+          count += 1
+          current = current.right
+      else:
+        pre = current.left
+        
+        while pre.right and pre.right != current:
+          pre = pre.right
+
+        if pre.right is None:
+          pre.right = current
+          current = current.left
+        else:
+          pre.right = None
+          count += 1
+          current = current.right
+
+    return count
+  
+class QuestionTree:
+  def __init__(self, root=None):
+    self.root = root
+  
+  def treeInsert(self, node):
+    y = None
+    x = self.root
+    
+    while x != None:
+      y = x
+      
+      if questionComparer(node.key, x.key):
+        x = x.left
+      else:
+        x = x.right
+    
+    node.parent = y
+
+    if y is None:
+      self.root = node
+    else:
+      if questionComparer(node.key, y.key):
+        y.left = node
+      else:
+        y.right = node
+        
+
+  
+  def countQuestions(self):
+    count = 0
+    current = self.root
+
+    while current:
+      if current.left is None:
+          count += 1
+          current = current.right
+      else:
+        pre = current.left
+        
+        while pre.right and pre.right != current:
+          pre = pre.right
+
+        if pre.right is None:
+          pre.right = current
+          current = current.left
+        else:
+          pre.right = None
+          count += 1
+          current = current.right
+
+    return count
+ 
+class TopicTree:
+  def __init__(self, root=None):
+    self.root = root
+  
+  def treeInsert(self, node):
+    y = None
+    x = self.root
+    
+    while x != None:
+      y = x
+      
+      if topicListComparer(node.key, x.key):
+        x = x.left
+      else:
+        x = x.right
+    
+    node.parent = y
+
+    if y is None:
+      self.root = node
+    else:
+      if topicListComparer(node.key, y.key):
+        y.left = node
+      else:
+        y.right = node
+  
 class Node:
-  def __init__(self, parent, left, right, key):
+  def __init__(self, key, parent=None, left=None, right=None):
+    self.key = key
     self.parent = parent
     self.left = left
     self.right = right
-    self.key = key
 
 from auxiliar_functions import *
 
@@ -29,141 +153,342 @@ class TreeParticipant:
 class TreeQuestion:
   _identifierCounter = 1
   
-  def __init__(self, participants):
+  def __init__(self, participantsAux):
     self.identifier = TreeQuestion._identifierCounter
-    self.participants = participants
+    self.participantsAux = participantsAux
+    self.participantTree = ParticipantTree()
+    self._initTree()
     TreeQuestion._identifierCounter += 1
-    
+  
+  def _initTree(self):
+    self.participantTree = ParticipantTree()
+    for participant in self.participantsAux:
+      self.participantTree.treeInsert(Node(participant))    
+  
   def setPrintIdentifier(self, printIdentifier):
     self.printIdentifier = printIdentifier
 
-  def _calcData(self):
-    self.numOfParticipants = self.participants.len()
-    self.opinionMean = self._opinionMean()
-    self.expertiseMean = self._expertiseMean()
-    self.opinionMode = self._opinionMode()
-    self.opinionMedian = self._opinionMedian()
-    self.extremism = self._extremism()
-    self.consensus = self._consensus()
-    
-  def _consensus(self):
-    count = 0
-    
-    for participant in self.participants:
-      if participant.opinion == self.opinionMode:
-        count += 1
-        
-    return count / self.numOfParticipants
-    
-  def _extremism(self):
-    count = 0
-    
-    for participant in self.participants:
-      if participant.opinion == 0 or participant.opinion == 10:
-        count += 1
-        
-    return count / self.numOfParticipants
-    
-  def _opinionMode(self):
-    opinionMode = self.participants[0].opinion
-    maxCount = 1
-    current = self.participants[0].opinion
-    count = 1
+  def _calcOpinionMean(self):
+    acc = 0
+    current = self.participantTree.root
 
-    for i in range(1, self.numOfParticipants):
-      if self.participants[i].opinion == current:
-        count += 1
+    while current:
+      if current.left is None:
+        acc += current.key.opinion
+        current = current.right
       else:
-        if count > maxCount:
-          maxCount = count
-          opinionMode = current
-        elif count == maxCount:
-          if current < opinionMode:
-            opinionMode = current
-        current = self.participants[i].opinion
-        count = 1
+        pre = current.left
+        
+        while pre.right and pre.right != current:
+          pre = pre.right
 
-    if count > maxCount:
-      opinionMode = current
-    elif count == maxCount:
-      if current < opinionMode:
-        opinionMode = current
-          
-    return opinionMode
+        if pre.right is None:
+          pre.right = current
+          current = current.left
+        else:
+          pre.right = None
+          acc += current.key.opinion
+          current = current.right
+
+    return acc / self.numOfParticipants     
   
-  def _opinionMedian(self):
-    if self.numOfParticipants % 2 == 1:
-      return self.participants[self.numOfParticipants // 2].opinion
+  def _calcExpertiseMean(self):
+    acc = 0
+    current = self.participantTree.root
+
+    while current:
+      if current.left is None:
+        acc += current.key.expertise
+        current = current.right
+      else:
+        pre = current.left
+        
+        while pre.right and pre.right != current:
+          pre = pre.right
+
+        if pre.right is None:
+          pre.right = current
+          current = current.left
+        else:
+          pre.right = None
+          acc += current.key.expertise
+          current = current.right
+
+    return acc / self.numOfParticipants    
+  
+  def _calcOpinionMode(self):
+    current = self.participantTree.root
+    prevValue = None
+    currentCount = 0
+    maxCount = 0
+    mode = None
+
+    while current:
+      if current.left is None:
+        val = current.key.opinion
+
+        if val == prevValue:
+          currentCount += 1
+        else:
+          currentCount = 1
+          prevValue = val
+
+        if currentCount > maxCount:
+          maxCount = currentCount
+          mode = val
+        elif currentCount == maxCount:
+          if val < mode:
+            mode = val
+
+        current = current.right
+
+      else:
+        pre = current.left
+        
+        while pre.right and pre.right != current:
+          pre = pre.right
+
+        if pre.right is None:
+          pre.right = current
+          current = current.left
+        else:
+          pre.right = None
+          val = current.key.opinion
+
+          if val == prevValue:
+            currentCount += 1
+          else:
+            currentCount = 1
+            prevValue = val
+
+          if currentCount > maxCount:
+            maxCount = currentCount
+            mode = val
+          elif currentCount == maxCount:
+            if val < mode:
+              mode = val
+
+          current = current.right
+
+    return mode
+
+  def _calcOpinionMedian(self):
+    total = self.numOfParticipants
+    current = self.participantTree.root
+    count = 0
+    median1 = None
+    median2 = None
+    isEven = (total % 2 == 0)
+    middle1 = total // 2
+    middle2 = middle1 + 1 
+
+    while current:
+      if current.left is None:
+        count += 1
+        if count == middle1:
+          median1 = current.key.opinion
+        if count == middle2:
+          median2 = current.key.opinion
+          break
+        current = current.right
+      else:
+        pre = current.left
+        while pre.right and pre.right != current:
+          pre = pre.right
+
+        if pre.right is None:
+          pre.right = current
+          current = current.left
+        else:
+          pre.right = None
+          count += 1
+          if count == middle1:
+            median1 = current.key.opinion
+          if count == middle2:
+            median2 = current.key.opinion
+            break
+          current = current.right
+
+    if isEven:
+      if median1 < median2:
+        return median1
+      else:
+        return median2
     else:
-      i = self.numOfParticipants // 2
-      
-      if self.participants[i - 1].opinion < self.participants[i].opinion:
-        return self.participants[i - 1].opinion
-      
-      return self.participants[i].opinion
-      
-  def _opinionMean(self):
+      return median2
+    
+  def _calcExtremism(self):
     acc = 0
-      
-    for participant in self.participants:
-      acc += participant.opinion
+    current = self.participantTree.root
+
+    while current:
+      if current.left is None:
+        if current.key.opinion == 0 or current.key.opinion == 10:
+          acc += 1
+        current = current.right
+      else:
+        pre = current.left
         
-    return acc / self.numOfParticipants
+        while pre.right and pre.right != current:
+          pre = pre.right
+
+        if pre.right is None:
+          pre.right = current
+          current = current.left
+        else:
+          pre.right = None
+          if current.key.opinion == 0 or current.key.opinion == 10:
+            acc += 1
+          current = current.right
+
+    return acc / self.numOfParticipants 
   
-  def _expertiseMean(self):
+  def _calcConsensus(self):
     acc = 0
-      
-    for participant in self.participants:
-      acc += participant.expertise
+    current = self.participantTree.root
+
+    while current:
+      if current.left is None:
+        if current.key.opinion == self.opinionMode:
+          acc += 1
+        current = current.right
+      else:
+        pre = current.left
         
-    return acc / self.numOfParticipants   
+        while pre.right and pre.right != current:
+          pre = pre.right
+
+        if pre.right is None:
+          pre.right = current
+          current = current.left
+        else:
+          pre.right = None
+          if current.key.opinion == self.opinionMode:
+            acc += 1
+          current = current.right
+
+    return acc / self.numOfParticipants 
+  
+  def _calcData(self):
+    self.numOfParticipants = self.participantTree.countParticipants()
+    self.opinionMean = self._calcOpinionMean()
+    self.expertiseMean = self._calcExpertiseMean()
+    self.opinionMode = self._calcOpinionMode()
+    self.opinionMedian = self._calcOpinionMedian()
+    self.extremism = self._calcExtremism()
+    self.consensus = self._calcConsensus()
   
 class TreeTopic:
   _identifierCounter = 1
   
-  def __init__(self, questions):
+  def __init__(self, questionsAux):
     self.identifier = TreeTopic._identifierCounter
-    self.questions = questions
+    self.questionsAux = questionsAux
+    self._initTree()
     TreeTopic._identifierCounter += 1
-    
-    for i, question in enumerate(questions, 1):
+  
+  def _initTree(self):
+    self.questionTree = QuestionTree()
+    for i, question in enumerate(self.questionsAux, 1):
       question.setPrintIdentifier(f"{self.identifier}.{i}")
+      self.questionTree.treeInsert(Node(question))
+      
+  def _calcTotalNumOfParticipants(self):
+    total = 0
+    current = self.questionTree.root
+
+    while current:
+      if current.left is None:
+        total += current.key.participantTree.countParticipants()
+        current = current.right
+      else:
+        pre = current.left
+        
+        while pre.right and pre.right != current:
+          pre = pre.right
+
+        if pre.right is None:
+          pre.right = current
+          current = current.left
+        else:
+          pre.right = None
+          total += current.key.participantTree.countParticipants()
+          current = current.right
+
+    return total    
+     
+  def _calcOpinionMeanOfMeans(self):
+    acc = 0
+    current = self.questionTree.root
+
+    while current:
+      if current.left is None:
+        acc += current.key.opinionMean
+        current = current.right
+      else:
+        pre = current.left
+        
+        while pre.right and pre.right != current:
+          pre = pre.right
+
+        if pre.right is None:
+          pre.right = current
+          current = current.left
+        else:
+          pre.right = None
+          acc += current.key.opinionMean
+          current = current.right
+
+    return acc / self.numOfQuestions     
+  
+  def _calcExpertiseMean(self):
+    acc = 0
+    current = self.participantTree.root
+
+    while current:
+      if current.left is None:
+        acc += current.key.expertiseMean
+        current = current.right
+      else:
+        pre = current.left
+        
+        while pre.right and pre.right != current:
+          pre = pre.right
+
+        if pre.right is None:
+          pre.right = current
+          current = current.left
+        else:
+          pre.right = None
+          acc += current.key.expertiseMean
+          current = current.right
+
+    return acc / self.numOfQuestions     
     
   def _calcData(self):
-    self.totalNumOfParticipants = self._totalNumOfParticipants()
+    self.totalNumOfParticipants = self._calcTotalNumOfParticipants()
+    self.numOfQuestions = self.questionTree.countQuestions()
     self.opinionMeanOfMeans = self._opinionMeanOfMeans()
     self.expertiseMeanOfMeans = self._expertiseMeanOfMeans()
-      
-  def _totalNumOfParticipants(self):
-    acc = 0
-    
-    for question in self.questions:
-      acc += question.numOfParticipants
-    
-    return acc
-
-  def _opinionMeanOfMeans(self):
-    acc = 0
-    
-    for question in self.questions:
-      acc += question.opinionMean
-      
-    return acc / len(self.questions)
-
-  def _expertiseMeanOfMeans(self):
-    acc = 0
-    
-    for question in self.questions:
-      acc += question.expertiseMean
-      
-    return acc / len(self.questions)
-    
+ 
 class TreeSurvey:
-  def __init__(self, topics, questions, participants):
-    self.topics = topics
-    self.questions = questions
-    self.participants = participants
-    
+  def __init__(self, topicsAux, questionsAux, participantsAux):
+    self.topicsAux = topicsAux
+    self.questionsAux = questionsAux
+    self.participantsAux = participantsAux
+    self._initTrees()
+  
+  def _initTrees(self):
+    self.topicTree = TopicTree()
+    self.questionTree = QuestionTree()
+    self.participantTree = ParticipantTree()
+    for participant in self.participantsAux:
+      self.participantTree.treeInsert(Node(participant))
+    for question in self.questionsAux:
+      self.questionTree.treeInsert(Node(question))
+    for topic in self.topicsAux:
+      self.topicTree.treeInsert(Node(topic))
+  
   def execute(self):
     self._sortQuestionParticipants()
     self._calcData()

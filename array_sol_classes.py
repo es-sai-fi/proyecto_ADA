@@ -29,14 +29,14 @@ class ArrayQuestion:
   
   def _calcData(self):
     self.numOfParticipants = len(self.participants)
-    self.opinionMean = self._opinionMean()
-    self.expertiseMean = self._expertiseMean()
-    self.opinionMode = self._opinionMode()
-    self.opinionMedian = self._opinionMedian()
-    self.extremism = self._extremism()
-    self.consensus = self._consensus()
+    self.opinionMean = self._calcOpinionMean()
+    self.expertiseMean = self._calcExpertiseMean()
+    self.opinionMode = self._calcOpinionMode()
+    self.opinionMedian = self._calcOpinionMedian()
+    self.extremism = self._calcExtremism()
+    self.consensus = self._calcConsensus()
     
-  def _consensus(self):
+  def _calcConsensus(self):
     count = 0
     
     for participant in self.participants:
@@ -45,7 +45,7 @@ class ArrayQuestion:
         
     return count / self.numOfParticipants
     
-  def _extremism(self):
+  def _calcExtremism(self):
     count = 0
     
     for participant in self.participants:
@@ -54,7 +54,7 @@ class ArrayQuestion:
         
     return count / self.numOfParticipants
     
-  def _opinionMode(self):
+  def _calcOpinionMode(self):
     opinionMode = self.participants[0].opinion
     maxCount = 1
     current = self.participants[0].opinion
@@ -81,7 +81,7 @@ class ArrayQuestion:
           
     return opinionMode
   
-  def _opinionMedian(self):
+  def _calcOpinionMedian(self):
     if self.numOfParticipants % 2 == 1:
       return self.participants[self.numOfParticipants // 2].opinion
     else:
@@ -92,7 +92,7 @@ class ArrayQuestion:
       
       return self.participants[i].opinion
       
-  def _opinionMean(self):
+  def _calcOpinionMean(self):
     acc = 0
       
     for participant in self.participants:
@@ -100,7 +100,7 @@ class ArrayQuestion:
         
     return acc / self.numOfParticipants
   
-  def _expertiseMean(self):
+  def _calcExpertiseMean(self):
     acc = 0
       
     for participant in self.participants:
@@ -125,6 +125,7 @@ class ArrayTopic:
     
   def _calcData(self):
     self.totalNumOfParticipants = self._totalNumOfParticipants()
+    self.numOfQuestions = len(self.questions)
     self.opinionMeanOfMeans = self._opinionMeanOfMeans()
     self.expertiseMeanOfMeans = self._expertiseMeanOfMeans()
       
@@ -142,7 +143,7 @@ class ArrayTopic:
     for question in self.questions:
       acc += question.opinionMean
       
-    return acc / len(self.questions)
+    return acc / self.numOfQuestions
 
   def _expertiseMeanOfMeans(self):
     acc = 0
@@ -150,7 +151,7 @@ class ArrayTopic:
     for question in self.questions:
       acc += question.expertiseMean
       
-    return acc / len(self.questions)
+    return acc / self.numOfQuestions
     
 class ArraySurvey:
   def __init__(self, topics, questions, participants):
