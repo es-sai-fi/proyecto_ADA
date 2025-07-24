@@ -46,11 +46,13 @@ Nmin = 3 # Mínimo número de encuestados por pregunta
 Nmax = 5 # Máximo número de encuestados por pregunta
 mode = "random" # Modo de generación
 path = "tests/Test4.txt" # Ruta donde guardar el output
-```
 
+"""
 "random" significa que cada pregunta tendrá P encuestados donde P es un número natural entre Nmin y Nmax.
 "min" significa que cada pregunta tendrá Nmin encuestados.
 "max" significa que cada pregunta tendrá Nmax encuestados.
+"""
+```
 
 2. Abrir una terminal en la raíz del proyecto.
 3. Ejecutar el archivo:
