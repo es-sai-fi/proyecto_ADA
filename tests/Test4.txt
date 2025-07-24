@@ -1,29 +1,27 @@
 
-Persona 1, Experticia: 8, Opinión: 6
-Persona 2, Experticia: 4, Opinión: 7
-Persona 3, Experticia: 9, Opinión: 0
-Persona 4, Experticia: 9, Opinión: 6
-Persona 5, Experticia: 9, Opinión: 10
-Persona 6, Experticia: 10, Opinión: 10
-Persona 7, Experticia: 4, Opinión: 0
-Persona 8, Experticia: 1, Opinión: 7
-Persona 9, Experticia: 0, Opinión: 8
-Persona 10, Experticia: 8, Opinión: 1
-Persona 11, Experticia: 3, Opinión: 8
-Persona 12, Experticia: 2, Opinión: 1
-Persona 13, Experticia: 2, Opinión: 1
-Persona 14, Experticia: 1, Opinión: 2
-Persona 15, Experticia: 9, Opinión: 4
-Persona 16, Experticia: 10, Opinión: 0
+Persona 1, Experticia: 9, Opinión: 4
+Persona 2, Experticia: 0, Opinión: 0
+Persona 3, Experticia: 10, Opinión: 2
+Persona 4, Experticia: 1, Opinión: 0
+Persona 5, Experticia: 0, Opinión: 1
+Persona 6, Experticia: 3, Opinión: 7
+Persona 7, Experticia: 8, Opinión: 4
+Persona 8, Experticia: 1, Opinión: 3
+Persona 9, Experticia: 5, Opinión: 5
+Persona 10, Experticia: 0, Opinión: 3
+Persona 11, Experticia: 1, Opinión: 4
+Persona 12, Experticia: 1, Opinión: 5
+Persona 13, Experticia: 1, Opinión: 7
+Persona 14, Experticia: 2, Opinión: 7
 
 
-{1, 2, 3, 4, 5}
+{1, 2, 3}
 
 
-{6, 7, 8, 9, 10}
+{4, 5, 6, 7}
 
 
-{11, 12, 13}
+{8, 9, 10, 11}
 
 
-{14, 15, 16}
+{12, 13, 14}

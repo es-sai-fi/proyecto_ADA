@@ -49,12 +49,12 @@ def formatOutput(participants, questionBlocks):
   return "".join(lines)
   
 # Parámetros
-K = 2
-M = 2
-Nmin = 3
-Nmax = 5
-mode = "random"
-path = "tests/Test4.txt"
+K = 2 # Número de temas
+M = 2 # Número de preguntas por tema
+Nmin = 3 # Mínimo número de encuestados por pregunta
+Nmax = 5 # Máximo número de encuestados por pregunta
+mode = "random" # Modo de generación
+path = "tests/Test4.txt" # Ruta donde guardar el output
 
 participants, questionBlocks = generateData(K, M, Nmin, Nmax, mode)
 formattedText = formatOutput(participants, questionBlocks)
