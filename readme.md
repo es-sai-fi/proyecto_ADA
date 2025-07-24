@@ -21,18 +21,8 @@ proyecto_ADA/
 
 ## Ejecución
 
-1. Configurar en `main.py` los parámetros de ejecución
-
-```python
-  inputPath = "tests/Test1.txt" # Path al test a ejecutar (test singular)
-  # 0 para ejecutar todos los tests en tests\, 1 ejecutar solo el test en inputPath
-  mode = 0 
-  # 0 para solución de Arrays, 1 para BSTs
-  solution = 1 
-```
-
-2. Abrir una terminal en la raíz del proyecto.
-3. Ejecutar el archivo principal:
+1. Abrir una terminal en la raíz del proyecto.
+2. Ejecutar el archivo principal:
 
 ```
 python main.py

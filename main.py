@@ -1,7 +1,7 @@
-from core.array_sol_classes import *
-from core.tree_sol_classes import *
 import time
 import os
+from core.array_sol_classes import *
+from core.tree_sol_classes import *
 
 def parseAndCreateArraySurvey(inputPath):
   participants = []
@@ -108,13 +108,13 @@ def parseAndCreateTreeSurvey(path):
   return TreeSurvey(topicsAux, questionsAux, participantsAux)
 
 if __name__ == "__main__":
-  inputPath = "tests/Test1.txt" # Path al test a ejecutar (test singular)
-  # 0 para ejecutar todos los tests en tests\, 1 ejecutar solo el test en inputPath
-  mode = 1 
-  # 0 para solución de Arrays, 1 para BSTs
-  solution = 1
+  print("Configuración de ejecución")
+  mode = int(input("Modo de ejecución (0: todos los tests, 1: solo el test dado): ").strip())
   
   if mode:
+    inputPath = input("Ruta del test (ej. tests/Test1.txt): ").strip()
+    solution = int(input("Solución a usar (0: Arrays, 1: BSTs): ").strip())
+    
     if solution:
       treeSurvey = parseAndCreateTreeSurvey(inputPath)
       start = time.time()
