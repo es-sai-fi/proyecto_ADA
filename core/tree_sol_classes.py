@@ -157,15 +157,24 @@ class TreeQuestion:
     self.participantTree = ParticipantTree()
     TreeQuestion._identifierCounter += 1
   
+  def setPrintIdentifier(self, printIdentifier):
+    self.printIdentifier = printIdentifier
+  
   def _initTree(self):
     self.participantTree = ParticipantTree()
     for participant in self.participantsAux:
       self.participantTree.treeInsert(Node(participant))   
-      
     self._calcData() 
-  
-  def setPrintIdentifier(self, printIdentifier):
-    self.printIdentifier = printIdentifier
+    
+    
+  def _calcData(self):
+    self.numOfParticipants = self.participantTree.countParticipants()
+    self.opinionMean = self._calcOpinionMean()
+    self.expertiseMean = self._calcExpertiseMean()
+    self.opinionMode = self._calcOpinionMode()
+    self.opinionMedian = self._calcOpinionMedian()
+    self.extremism = self._calcExtremism()
+    self.consensus = self._calcConsensus()
 
   def _calcOpinionMean(self):
     acc = 0
@@ -368,15 +377,6 @@ class TreeQuestion:
 
     return acc / self.numOfParticipants 
   
-  def _calcData(self):
-    self.numOfParticipants = self.participantTree.countParticipants()
-    self.opinionMean = self._calcOpinionMean()
-    self.expertiseMean = self._calcExpertiseMean()
-    self.opinionMode = self._calcOpinionMode()
-    self.opinionMedian = self._calcOpinionMedian()
-    self.extremism = self._calcExtremism()
-    self.consensus = self._calcConsensus()
-  
 class TreeTopic:
   _identifierCounter = 1
   
@@ -390,9 +390,14 @@ class TreeTopic:
     for i, question in enumerate(self.questionsAux, 1):
       question.setPrintIdentifier(f"{self.identifier}.{i}")
       self.questionTree.treeInsert(Node(question))
-      
     self._calcData()
-      
+        
+  def _calcData(self):
+    self.totalNumOfParticipants = self._calcTotalNumOfParticipants()
+    self.numOfQuestions = self.questionTree.countQuestions()
+    self.opinionMeanOfMeans = self._calcOpinionMeanOfMeans()
+    self.expertiseMeanOfMeans = self._calcExpertiseMeanOfMeans()
+    
   def _calcTotalNumOfParticipants(self):
     total = 0
     current = self.questionTree.root
@@ -464,18 +469,17 @@ class TreeTopic:
           current = current.right
 
     return acc / self.numOfQuestions     
-    
-  def _calcData(self):
-    self.totalNumOfParticipants = self._calcTotalNumOfParticipants()
-    self.numOfQuestions = self.questionTree.countQuestions()
-    self.opinionMeanOfMeans = self._calcOpinionMeanOfMeans()
-    self.expertiseMeanOfMeans = self._calcExpertiseMeanOfMeans()
  
 class TreeSurvey:
   def __init__(self, topicsAux, questionsAux, participantsAux):
     self.topicsAux = topicsAux
     self.questionsAux = questionsAux
     self.participantsAux = participantsAux
+  
+  def execute(self):
+    self._initTrees() # Crea los árboles para cada topic y question
+    self._calcData()
+    self._printSolution()
   
   def _initTrees(self):
     self.topicTree = TopicTree()
@@ -489,11 +493,6 @@ class TreeSurvey:
     for topic in self.topicsAux:
       topic._initTree()
       self.topicTree.treeInsert(Node(topic))
-  
-  def execute(self):
-    self._initTrees()
-    self._calcAdditionalData()
-    self._printSolution()
   
   def _printSolution(self):
     outputLines = []
@@ -529,7 +528,7 @@ class TreeSurvey:
     with open("Results.txt", "w", encoding="utf-8") as f:
       f.write(result_text)
 
-  def _calcAdditionalData(self):
+  def _calcData(self):
     self.questionHighestOpinionMean = self._calcHighestOpinionMean()
     self.questionLowestOpinionMean = self._calcLowestOpinionMean()
     self.questionHighestExpertiseMean = self._calcHighestExpertiseMean()
@@ -890,10 +889,3 @@ class TreeSurvey:
           current = current.right
 
     return bestQuestion 
-    
-  def _calcData(self):
-    for question in self.questions:
-      question._calcData()
-      
-    for topic in self.topics:
-      topic._calcData()

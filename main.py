@@ -107,18 +107,18 @@ def parseAndCreateTreeSurvey(path):
   return TreeSurvey(topicsAux, questionsAux, participantsAux)
 
 if __name__ == "__main__":
-  path = "tests/Test1.txt"
-  solution = 1
+  path = "tests/Test1.txt" # Path al test a ejecutar
+  solution = 1 # 0 para solución de Arrays, 1 para BSTs
   
   if solution:
+    treeSurvey = parseAndCreateTreeSurvey(path) # Se crean los objetos
     start = time.time()
-    treeSurvey = parseAndCreateTreeSurvey(path)
     treeSurvey.execute()
     end = time.time()
     print(f"Tiempo (BSTs): {end - start}")
   else:
-    start = time.time()
     arraySurvey = parseAndCreateArraySurvey(path)
+    start = time.time()
     arraySurvey.execute()
     end = time.time()
     print(f"Tiempo (Arrays): {end - start}")
