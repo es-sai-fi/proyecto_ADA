@@ -471,15 +471,19 @@ class TreeTopic:
     return acc / self.numOfQuestions     
  
 class TreeSurvey:
-  def __init__(self, topicsAux, questionsAux, participantsAux):
+  def __init__(self, topicsAux, questionsAux, participantsAux, outputPath="Results.txt"):
     self.topicsAux = topicsAux
     self.questionsAux = questionsAux
     self.participantsAux = participantsAux
+    self.outputPath = outputPath
   
   def execute(self):
     self._initTrees() # Crea los árboles para cada topic y question
     self._calcData()
     self._printSolution()
+    
+  def setOutputPath(self, outputPath):
+    self.outputPath = outputPath
   
   def _initTrees(self):
     self.topicTree = TopicTree()
@@ -523,10 +527,10 @@ class TreeSurvey:
     outputLines.append(f"\tPregunta con mayor extremismo: [{self.questionHighestExtremism.extremism:.2f}] Pregunta: {self.questionHighestExtremism.printIdentifier}")
     outputLines.append(f"\tPregunta con mayor consenso: [{self.questionHighestConsensus.consensus:.2f}] Pregunta: {self.questionHighestConsensus.printIdentifier}")
 
-    result_text = "\n".join(outputLines)
+    resultText = "\n".join(outputLines)
 
-    with open("Results.txt", "w", encoding="utf-8") as f:
-      f.write(result_text)
+    with open(self.outputPath, "w", encoding="utf-8") as f:
+      f.write(resultText)
 
   def _calcData(self):
     self.questionHighestOpinionMean = self._calcHighestOpinionMean()

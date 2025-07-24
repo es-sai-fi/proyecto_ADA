@@ -1,13 +1,14 @@
 from core.array_sol_classes import *
 from core.tree_sol_classes import *
 import time
+import os
 
-def parseAndCreateArraySurvey(filename):
+def parseAndCreateArraySurvey(inputPath):
   participants = []
   questions = []
   topics = []
 
-  with open(filename, "r", encoding="utf-8") as file:
+  with open(inputPath, "r", encoding="utf-8") as file:
     lines = [line.strip() for line in file]
 
   participantLines = []
@@ -107,18 +108,48 @@ def parseAndCreateTreeSurvey(path):
   return TreeSurvey(topicsAux, questionsAux, participantsAux)
 
 if __name__ == "__main__":
-  path = "tests/Test1.txt" # Path al test a ejecutar
-  solution = 1 # 0 para solución de Arrays, 1 para BSTs
+  inputPath = "tests/Test1.txt" # Path al test a ejecutar (test singular)
+  # 0 para ejecutar todos los tests en tests\, 1 ejecutar solo el test en inputPath
+  mode = 1 
+  # 0 para solución de Arrays, 1 para BSTs
+  solution = 1
   
-  if solution:
-    treeSurvey = parseAndCreateTreeSurvey(path) # Se crean los objetos
-    start = time.time()
-    treeSurvey.execute()
-    end = time.time()
-    print(f"Tiempo (BSTs): {end - start}")
+  if mode:
+    if solution:
+      treeSurvey = parseAndCreateTreeSurvey(inputPath)
+      start = time.time()
+      treeSurvey.execute()
+      end = time.time()
+      print(f"Tiempo (BST): {end - start}")
+    else:
+      arraySurvey = parseAndCreateArraySurvey(inputPath)
+      start = time.time()
+      arraySurvey.execute()
+      end = time.time()
+      print(f"Tiempo (Array): {end - start}")
   else:
-    arraySurvey = parseAndCreateArraySurvey(path)
-    start = time.time()
-    arraySurvey.execute()
-    end = time.time()
-    print(f"Tiempo (Arrays): {end - start}")
+    testFolder = "tests"
+    testFiles = [f for f in os.listdir(testFolder) if f.endswith(".txt")]
+
+    for i, filename in enumerate(testFiles, 1):
+        inputPath = os.path.join(testFolder, filename)
+        outputPathArray = f"Results{i}Array.txt"
+        outputPathBST = f"Results{i}BST.txt"
+        
+        # Sol. Array
+        arraySurvey = parseAndCreateArraySurvey(inputPath)
+        start0 = time.time()
+        arraySurvey.setOutputPath(outputPathArray)
+        arraySurvey.execute()
+        end0 = time.time()
+        
+        # Sol. BST
+        treeSurvey = parseAndCreateTreeSurvey(inputPath)
+        start1 = time.time()
+        treeSurvey.setOutputPath(outputPathBST)
+        treeSurvey.execute()
+        end1 = time.time()
+        
+        print(f"\nTest{i}:")
+        print(f"Tiempo (Array): {end0 - start0}")
+        print(f"Tiempo (BST): {end1 - start1}")
