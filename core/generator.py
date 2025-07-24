@@ -9,6 +9,7 @@ def generateData(K, M, Nmin, Nmax, mode="min"):
 
   for _ in range(K):
     block = []
+    
     for _ in range(M):
       if mode == "min":
         numParticipants = Nmin
@@ -20,11 +21,13 @@ def generateData(K, M, Nmin, Nmax, mode="min"):
       questionParticipants = list(range(participantId, participantId + numParticipants))
       participantId += numParticipants
       block.append(questionParticipants)
+      
       for pid in questionParticipants:
         name = f"Persona {pid}"
         expertise = random.randint(0, 10)
         opinion = random.randint(0, 10)
         participants.append(f"{name}, Experticia: {expertise}, Opinión: {opinion}")
+        
     questionBlocks.append(block)
 
   return participants, questionBlocks
