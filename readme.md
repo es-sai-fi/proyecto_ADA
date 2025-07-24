@@ -19,6 +19,11 @@ proyecto_ADA/
 ├── main.py
 ```
 
+## Archivos Entregados
+
+Además de los archivos expuestos en la estructura del proyecto,
+se hace entrega del pdf del informe.
+
 ## Ejecución
 
 1. Abrir una terminal en la raíz del proyecto.
