@@ -7,10 +7,14 @@ proyecto_ADA/
 │
 ├── core/
 │   ├── array_sol_classes.py
+│   ├── auxiliar_functions.py
+│   ├── generator.py
 │   ├── tree_sol_classes.py
 │
 ├── tests/
-│   └── Test1.txt
+│   ├── Test1.txt
+│   ├── Test2.txt
+│   ├── ... (más archivos de prueba)   
 │
 ├── main.py
 ```
