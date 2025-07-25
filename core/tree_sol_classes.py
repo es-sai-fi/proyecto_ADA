@@ -582,7 +582,7 @@ class TreeSurvey:
   def _calcLowestOpinionMean(self):
     current = self.questionTree.root
     bestQuestion = None
-    lowest = 10
+    lowest = 11
 
     while current:
       if current.left is None:
@@ -652,7 +652,7 @@ class TreeSurvey:
   def _calcLowestExpertiseMean(self):
     current = self.questionTree.root
     bestQuestion = None
-    lowest = 10
+    lowest = 11
 
     while current:
       if current.left is None:
@@ -722,8 +722,8 @@ class TreeSurvey:
   def _calcLowestOpinionMedian(self):
     current = self.questionTree.root
     bestQuestion = None
-    lowest = 10
-
+    lowest = 11
+    
     while current:
       if current.left is None:
         q = current.key
@@ -792,7 +792,7 @@ class TreeSurvey:
   def _calcLowestOpinionMode(self):
     current = self.questionTree.root
     bestQuestion = None
-    lowest = 10
+    lowest = 11
 
     while current:
       if current.left is None:
